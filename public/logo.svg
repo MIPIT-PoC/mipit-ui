@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" rx="40" fill="#6366F1"/>
+  <text x="100" y="125" text-anchor="middle" font-family="system-ui, sans-serif" font-size="80" font-weight="700" fill="white">Mi</text>
+  <text x="100" y="170" text-anchor="middle" font-family="system-ui, sans-serif" font-size="36" font-weight="600" fill="white" opacity="0.8">PIT</text>
+</svg>
