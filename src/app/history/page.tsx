@@ -1,7 +1,14 @@
+'use client';
+
+import { useState } from 'react';
 import { PaymentTable } from '@/components/history/payment-table';
 import { Filters } from '@/components/history/filters';
+import type { PaymentStatus, Rail } from '@/lib/types';
 
 export default function HistoryPage() {
+  const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>();
+  const [railFilter, setRailFilter] = useState<Rail | undefined>();
+
   return (
     <div className="max-w-7xl mx-auto space-y-8 p-8">
       <div>
@@ -11,8 +18,14 @@ export default function HistoryPage() {
         </p>
       </div>
 
-      <Filters />
-      <PaymentTable />
+      <Filters
+        status={statusFilter}
+        rail={railFilter}
+        onStatusChange={setStatusFilter}
+        onRailChange={setRailFilter}
+      />
+
+      <PaymentTable filters={{ status: statusFilter, rail: railFilter }} />
     </div>
   );
 }

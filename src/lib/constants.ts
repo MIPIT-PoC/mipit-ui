@@ -15,6 +15,13 @@ export const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string
 };
 
 export const RAIL_CONFIG = {
-  PIX:  { label: 'PIX (Brasil)',  flag: '🇧🇷', currency: 'BRL', aliasPrefix: 'PIX-',  aliasPattern: /^PIX-[A-Za-z0-9._-]{6,64}$/ },
-  SPEI: { label: 'SPEI (México)', flag: '🇲🇽', currency: 'MXN', aliasPrefix: 'SPEI-', aliasPattern: /^SPEI-\d{18}$/ },
+  PIX:         { label: 'PIX (Brasil)',       flag: '🇧🇷', currency: 'BRL', aliasPrefix: 'PIX-',  aliasPattern: /^PIX-[A-Za-z0-9._-]{6,64}$/, region: 'América del Sur' },
+  SPEI:        { label: 'SPEI (México)',      flag: '🇲🇽', currency: 'MXN', aliasPrefix: 'SPEI-', aliasPattern: /^SPEI-\d{18}$/,               region: 'América del Norte' },
+  SWIFT_MT103: { label: 'SWIFT MT103',        flag: '🌐', currency: 'USD', aliasPrefix: '',       aliasPattern: /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/, region: 'Internacional' },
+  ISO20022_MX: { label: 'ISO 20022 MX',       flag: '🏦', currency: 'EUR', aliasPrefix: '',       aliasPattern: /^[A-Z]{2}\d{2}[A-Z0-9]{4,32}$/,               region: 'Internacional' },
+  ACH_NACHA:   { label: 'ACH NACHA (EE.UU)', flag: '🇺🇸', currency: 'USD', aliasPrefix: '',       aliasPattern: /^\d{9}\/[\w-]+$/,              region: 'América del Norte' },
+  FEDNOW:      { label: 'FedNow (EE.UU)',    flag: '🇺🇸', currency: 'USD', aliasPrefix: '',       aliasPattern: /^\d{9}\/[\w-]+$/,              region: 'América del Norte' },
+  BRE_B:       { label: 'Bre-B (Colombia)', flag: '🇨🇴', currency: 'COP', aliasPrefix: 'BREB-',  aliasPattern: /^(BREB-\+57\d{10}|\d{9,10}-\d|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+)$/, region: 'América del Sur' },
 } as const;
+
+export type SupportedRail = keyof typeof RAIL_CONFIG;

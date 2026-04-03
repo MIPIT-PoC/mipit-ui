@@ -1,4 +1,4 @@
-export type Rail = 'PIX' | 'SPEI';
+export type Rail = 'PIX' | 'SPEI' | 'SWIFT_MT103' | 'ISO20022_MX' | 'ACH_NACHA' | 'FEDNOW';
 
 export type PaymentStatus =
   | 'RECEIVED'
@@ -54,4 +54,41 @@ export interface CreatePaymentBody {
   creditor: { alias: string; name?: string };
   purpose?: string;
   reference?: string;
+}
+
+export interface TranslateRequest {
+  sourceRail: Rail;
+  destinationRail: Rail;
+  payload: Record<string, unknown>;
+  options?: {
+    includeCanonical?: boolean;
+    paymentId?: string;
+  };
+}
+
+export interface TranslateResponse {
+  paymentId: string;
+  sourceRail: Rail;
+  destinationRail: Rail;
+  translated: Record<string, unknown>;
+  canonical?: Record<string, unknown>;
+  translatedAt: string;
+  traceId?: string;
+}
+
+export interface TranslatePreviewResponse {
+  paymentId: string;
+  sourceRail: Rail;
+  canonical: Record<string, unknown>;
+  translations: Record<Rail, { success: boolean; data?: Record<string, unknown>; error?: string }>;
+  translatedAt: string;
+  traceId?: string;
+}
+
+export interface RailMeta {
+  id: Rail;
+  label: string;
+  description: string;
+  region: string;
+  standard: string;
 }

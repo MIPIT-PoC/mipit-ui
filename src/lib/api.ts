@@ -1,4 +1,13 @@
-import type { PaymentSummary, PaymentDetail, CreatePaymentBody } from './types';
+import type {
+  PaymentSummary,
+  PaymentDetail,
+  CreatePaymentBody,
+  TranslateRequest,
+  TranslateResponse,
+  TranslatePreviewResponse,
+  Rail,
+  RailMeta,
+} from './types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
@@ -39,4 +48,19 @@ export const api = {
   },
 
   getHealth: () => apiFetch<{ status: string; uptime: number }>('/health'),
+
+  translate: (body: TranslateRequest) =>
+    apiFetch<TranslateResponse>('/translate', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  translatePreview: (sourceRail: Rail, payload: Record<string, unknown>) =>
+    apiFetch<TranslatePreviewResponse>('/translate/preview', {
+      method: 'POST',
+      body: JSON.stringify({ sourceRail, payload }),
+    }),
+
+  getRails: () =>
+    apiFetch<{ rails: RailMeta[]; totalRails: number }>('/translate/rails'),
 };

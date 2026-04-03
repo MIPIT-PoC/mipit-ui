@@ -1,6 +1,18 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+const NAV_LINKS = [
+  { href: '/', label: 'Dashboard' },
+  { href: '/simulate', label: 'Simular' },
+  { href: '/history', label: 'Historial' },
+  { href: '/translator', label: 'Traductor' },
+];
 
 export function Navbar() {
+  const pathname = usePathname();
+
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-8">
@@ -9,15 +21,19 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link href="/" className="text-sm hover:text-foreground text-muted-foreground transition-colors">
-            Dashboard
-          </Link>
-          <Link href="/simulate" className="text-sm hover:text-foreground text-muted-foreground transition-colors">
-            Simular
-          </Link>
-          <Link href="/history" className="text-sm hover:text-foreground text-muted-foreground transition-colors">
-            Historial
-          </Link>
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`text-sm transition-colors ${
+                pathname === href
+                  ? 'text-foreground font-medium'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
         </div>
       </div>
     </nav>
