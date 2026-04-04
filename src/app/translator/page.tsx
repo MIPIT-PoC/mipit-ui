@@ -1,9 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { RAIL_CONFIG } from '@/lib/constants';
@@ -265,7 +262,7 @@ export default function TranslatorPage() {
           {!result && !loading && (
             <div className="rounded-lg border border-dashed p-12 text-center space-y-2">
               <p className="text-muted-foreground">
-                Selecciona un riel, edita el payload si necesitas, y presiona "Traducir".
+                Selecciona un riel, edita el payload si necesitas, y presiona &quot;Traducir&quot;.
               </p>
               <p className="text-xs text-muted-foreground">
                 Se mostrará la traducción a los {RAILS.length - 1} formatos restantes simultáneamente.

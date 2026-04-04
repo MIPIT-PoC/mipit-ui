@@ -34,7 +34,7 @@ export function ServiceHealth() {
         .catch(() => ({ name: 'mipit-core', url: '', status: 'error' as const })),
       ...SERVICES.slice(1).map(s =>
         fetch(s.url, { signal: AbortSignal.timeout(3000) })
-          .then(r => ({ name: s.name, url: s.url, status: (r.ok ? 'ok' : 'error') as const }))
+          .then(r => ({ name: s.name, url: s.url, status: r.ok ? 'ok' as const : 'error' as const }))
           .catch(() => ({ name: s.name, url: s.url, status: 'error' as const }))
       ),
     ];
