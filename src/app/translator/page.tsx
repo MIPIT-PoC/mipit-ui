@@ -7,7 +7,7 @@ import { RAIL_CONFIG } from '@/lib/constants';
 import type { Rail, TranslatePreviewResponse } from '@/lib/types';
 import { ArrowRight, ChevronDown, ChevronRight, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
 
-const RAILS: Rail[] = ['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW'];
+const RAILS: Rail[] = ['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'];
 
 const SAMPLE_PAYLOADS: Record<Rail, Record<string, unknown>> = {
   PIX: {
@@ -80,6 +80,14 @@ const SAMPLE_PAYLOADS: Record<Rail, Record<string, unknown>> = {
         LclInstrm: { Prtry: 'INST' },
       },
     },
+  },
+  BRE_B: {
+    idTransaccion: 'BREB-MIPIT-20230601001',
+    monto: { valor: 500000, moneda: 'COP' },
+    ordenante: { tipoId: 'CC', numeroId: '901234567', nombre: 'Ana María Gómez' },
+    beneficiario: { tipoId: 'CA', numeroId: '809876543', nombre: 'Carlos Ruiz' },
+    referencia: 'MIPIT-POC',
+    descripcion: 'Pago transfronterizo de prueba',
   },
 };
 

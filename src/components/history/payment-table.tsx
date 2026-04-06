@@ -120,8 +120,8 @@ export function PaymentTable({ filters }: Props) {
           <tbody>
             {paginated.map((p, i) => {
               const status = STATUS_CONFIG[p.status];
-              const origConf = RAIL_CONFIG[p.origin as keyof typeof RAIL_CONFIG];
-              const destConf = RAIL_CONFIG[p.destination as keyof typeof RAIL_CONFIG];
+              const origConf = RAIL_CONFIG[p.origin_rail as keyof typeof RAIL_CONFIG];
+              const destConf = RAIL_CONFIG[(p.destination_rail ?? '') as keyof typeof RAIL_CONFIG];
               return (
                 <tr key={p.payment_id} className={`border-b last:border-0 hover:bg-muted/30 transition-colors ${i % 2 === 0 ? '' : 'bg-muted/10'}`}>
                   <td className="p-3 font-mono text-xs text-muted-foreground">
@@ -129,13 +129,13 @@ export function PaymentTable({ filters }: Props) {
                   </td>
                   <td className="p-3">
                     <span className="flex items-center gap-1 text-sm">
-                      <span title={origConf?.label}>{origConf?.flag ?? p.origin}</span>
+                      <span title={origConf?.label}>{origConf?.flag ?? p.origin_rail}</span>
                       <span className="text-muted-foreground">→</span>
-                      <span title={destConf?.label}>{destConf?.flag ?? p.destination}</span>
+                      <span title={destConf?.label}>{destConf?.flag ?? p.destination_rail}</span>
                     </span>
                   </td>
                   <td className="p-3 font-mono text-sm">
-                    {p.currency} {p.amount?.toFixed(2) ?? '—'}
+                    {p.currency} {p.amount != null ? Number(p.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
                   </td>
                   <td className="p-3">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white ${status.color}`}>

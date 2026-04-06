@@ -11,11 +11,11 @@ import { RAIL_CONFIG } from '@/lib/constants';
 import type { Rail } from '@/lib/types';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
-const RAILS: Rail[] = ['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW'];
+const RAILS: Rail[] = ['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'];
 
 const formSchema = z.object({
-  originRail: z.enum(['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW'] as const),
-  destRail: z.enum(['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW'] as const),
+  originRail: z.enum(['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'] as const),
+  destRail: z.enum(['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'] as const),
   amount: z.coerce.number().positive('El monto debe ser mayor a 0'),
   currency: z.string().min(3).max(3),
   debtorAlias: z.string().min(3, 'El alias del ordenante es requerido'),
@@ -38,6 +38,7 @@ const ALIAS_PLACEHOLDERS: Record<Rail, { debtor: string; creditor: string }> = {
   ISO20022_MX: { debtor: 'DE89370400440532013000', creditor: 'MX29BBVA0123456789012345' },
   ACH_NACHA:   { debtor: '021000021/987654321', creditor: '026009593/123456789' },
   FEDNOW:      { debtor: '021000021/987654321', creditor: '026009593/123456789' },
+  BRE_B:       { debtor: 'BREB-901234567-CC', creditor: 'BREB-809876543-CA' },
 };
 
 function RailPicker({ label, value, onChange, excluded }: {
@@ -191,6 +192,7 @@ export default function SimulatePage() {
                 <option value="USD">USD — Dólar americano</option>
                 <option value="BRL">BRL — Real brasileño</option>
                 <option value="MXN">MXN — Peso mexicano</option>
+                <option value="COP">COP — Peso colombiano</option>
                 <option value="EUR">EUR — Euro</option>
               </select>
             </FormField>

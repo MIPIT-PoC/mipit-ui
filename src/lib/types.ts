@@ -1,4 +1,4 @@
-export type Rail = 'PIX' | 'SPEI' | 'SWIFT_MT103' | 'ISO20022_MX' | 'ACH_NACHA' | 'FEDNOW';
+export type Rail = 'PIX' | 'SPEI' | 'SWIFT_MT103' | 'ISO20022_MX' | 'ACH_NACHA' | 'FEDNOW' | 'BRE_B';
 
 export type PaymentStatus =
   | 'RECEIVED'
@@ -11,7 +11,10 @@ export type PaymentStatus =
   | 'COMPLETED'
   | 'FAILED'
   | 'REJECTED'
-  | 'DUPLICATE';
+  | 'DUPLICATE'
+  | 'COMPENSATING'
+  | 'COMPENSATED'
+  | 'DEAD_LETTER';
 
 export interface PaymentSummary {
   payment_id: string;
@@ -23,27 +26,27 @@ export interface PaymentSummary {
 export interface PaymentDetail {
   payment_id: string;
   status: PaymentStatus;
-  origin: Rail;
-  destination: Rail;
-  amount: number;
+  origin_rail: Rail;
+  destination_rail: Rail | null;
+  amount: number | string;
   currency: string;
-  original: Record<string, unknown>;
-  canonical: Record<string, unknown>;
-  translated: Record<string, unknown>;
-  rail_ack: {
+  original_payload?: Record<string, unknown>;
+  canonical_payload?: Record<string, unknown>;
+  translated_payload?: Record<string, unknown>;
+  rail_ack?: {
     rail_tx_id?: string;
     status: 'ACCEPTED' | 'REJECTED' | 'ERROR';
     error?: { code: string; message: string };
   } | null;
   timestamps: {
     created_at: string;
-    validated_at?: string;
-    canonicalized_at?: string;
-    routed_at?: string;
-    queued_at?: string;
-    sent_at?: string;
-    acked_at?: string;
-    completed_at?: string;
+    validated_at?: string | null;
+    canonicalized_at?: string | null;
+    routed_at?: string | null;
+    queued_at?: string | null;
+    sent_at?: string | null;
+    acked_at?: string | null;
+    completed_at?: string | null;
   };
 }
 

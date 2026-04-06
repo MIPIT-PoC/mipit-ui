@@ -12,6 +12,9 @@ export const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string
   FAILED:               { label: 'Fallido',         color: 'bg-red-500',     step: -1 },
   REJECTED:             { label: 'Rechazado',       color: 'bg-red-400',     step: -1 },
   DUPLICATE:            { label: 'Duplicado',       color: 'bg-gray-500',    step: -1 },
+  COMPENSATING:         { label: 'Compensando',     color: 'bg-amber-500',   step: -2 },
+  COMPENSATED:          { label: 'Compensado',      color: 'bg-amber-600',   step: -2 },
+  DEAD_LETTER:          { label: 'Dead Letter',     color: 'bg-red-700',     step: -3 },
 };
 
 export const RAIL_CONFIG = {

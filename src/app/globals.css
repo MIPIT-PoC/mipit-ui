@@ -1,1 +1,6 @@
 @import 'tailwindcss';
+
+/* Token semántico para paneles (p. ej. analítica) */
+@theme {
+  --color-card: oklch(100% 0 0);
+}
