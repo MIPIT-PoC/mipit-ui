@@ -6,17 +6,17 @@ import { RefreshCw } from 'lucide-react';
 
 interface ServiceStatus {
   name: string;
-  url: string;
+  rail?: 'PIX' | 'SPEI' | 'BRE_B';
   status: 'ok' | 'error' | 'loading';
   latency?: number;
   uptime?: number;
 }
 
-const SERVICES: Array<{ name: string; url: string }> = [
-  { name: 'mipit-core', url: '' },
-  { name: 'PIX Adapter', url: `${process.env.NEXT_PUBLIC_PIX_HEALTH_URL ?? 'http://localhost:9101'}/health` },
-  { name: 'SPEI Adapter', url: `${process.env.NEXT_PUBLIC_SPEI_HEALTH_URL ?? 'http://localhost:9102'}/health` },
-  { name: 'BRE-B Adapter', url: `${process.env.NEXT_PUBLIC_BREB_HEALTH_URL ?? 'http://localhost:9103'}/health` },
+const SERVICES: Array<{ name: string; rail?: 'PIX' | 'SPEI' | 'BRE_B' }> = [
+  { name: 'mipit-core' },
+  { name: 'PIX Adapter', rail: 'PIX' },
+  { name: 'SPEI Adapter', rail: 'SPEI' },
+  { name: 'BRE-B Adapter', rail: 'BRE_B' },
 ];
 
 function StatusDot({ status }: { status: ServiceStatus['status'] }) {
@@ -42,12 +42,12 @@ export function ServiceHealth() {
   const checkHealth = useCallback(async () => {
     const checks = [
       api.getHealth()
-        .then(data => ({ name: 'mipit-core', url: '', status: 'ok' as const, uptime: data.uptime }))
-        .catch(() => ({ name: 'mipit-core', url: '', status: 'error' as const })),
+        .then(data => ({ name: 'mipit-core', status: 'ok' as const, uptime: data.uptime }))
+        .catch(() => ({ name: 'mipit-core', status: 'error' as const })),
       ...SERVICES.slice(1).map(s =>
-        fetch(s.url, { signal: AbortSignal.timeout(3000) })
-          .then(r => ({ name: s.name, url: s.url, status: r.ok ? 'ok' as const : 'error' as const }))
-          .catch(() => ({ name: s.name, url: s.url, status: 'error' as const }))
+        api.getAdapterHealth(s.rail!)
+          .then(() => ({ name: s.name, rail: s.rail, status: 'ok' as const }))
+          .catch(() => ({ name: s.name, rail: s.rail, status: 'error' as const }))
       ),
     ];
 
