@@ -30,6 +30,17 @@ export interface PaymentDetail {
   destination_rail: Rail | null;
   amount: number | string;
   currency: string;
+  /** P11/P07 — Surface ISO 20022 + observability fields in the UI. */
+  trace_id?: string;
+  uetr?: string;
+  charge_bearer?: 'DEBT' | 'CRED' | 'SHAR' | 'SLEV';
+  interbank_settlement_date?: string;
+  instructed_amount?: number | string | null;
+  instructed_currency?: string | null;
+  settlement_amount?: number | string | null;
+  settlement_currency?: string | null;
+  exchange_rate?: number | string | null;
+  end_to_end_id?: string;
   original_payload?: Record<string, unknown>;
   canonical_payload?: Record<string, unknown>;
   translated_payload?: Record<string, unknown>;

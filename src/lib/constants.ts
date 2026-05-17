@@ -28,3 +28,10 @@ export const RAIL_CONFIG = {
 } as const;
 
 export type SupportedRail = keyof typeof RAIL_CONFIG;
+
+/**
+ * P11/P07 — Jaeger base URL for trace links on payment detail.
+ * Override with NEXT_PUBLIC_JAEGER_URL at build time.
+ */
+export const JAEGER_BASE_URL =
+  process.env.NEXT_PUBLIC_JAEGER_URL ?? 'http://localhost:16686';

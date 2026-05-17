@@ -5,11 +5,16 @@ import { api } from '@/lib/api';
 jest.mock('@/lib/api');
 const mockApi = api as jest.Mocked<typeof api>;
 
+// P11 — PaymentDetail also requires origin_rail / destination_rail (added when
+// the UI was migrated to the canonical detail shape). The old test mock
+// pre-dated that change.
 const MOCK_PAYMENT = {
   payment_id: 'PMT-AAAA0001234567890123',
   status: 'COMPLETED' as const,
   origin: 'PIX' as const,
   destination: 'SPEI' as const,
+  origin_rail: 'PIX' as const,
+  destination_rail: 'SPEI' as const,
   amount: 1500,
   currency: 'USD',
   original: {},

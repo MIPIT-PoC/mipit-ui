@@ -2,14 +2,17 @@ import { STATUS_CONFIG, RAIL_CONFIG } from '@/lib/constants';
 import type { PaymentStatus } from '@/lib/types';
 
 describe('STATUS_CONFIG', () => {
+  // P11 — Aligned with P01 canonical schema (15-state machine including
+  // compensation + dead-letter). Previous test expected 11 — stale.
   const expectedStatuses: PaymentStatus[] = [
     'RECEIVED', 'VALIDATED', 'CANONICALIZED', 'ROUTED', 'QUEUED',
     'SENT_TO_DESTINATION', 'ACKED_BY_RAIL', 'COMPLETED',
     'FAILED', 'REJECTED', 'DUPLICATE',
+    'COMPENSATING', 'COMPENSATED', 'DEAD_LETTER',
   ];
 
-  it('should have entries for all 11 payment statuses', () => {
-    expect(Object.keys(STATUS_CONFIG).length).toBe(11);
+  it('should have entries for all 14 payment statuses', () => {
+    expect(Object.keys(STATUS_CONFIG).length).toBe(14);
   });
 
   expectedStatuses.forEach(status => {

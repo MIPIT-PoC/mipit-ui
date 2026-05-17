@@ -20,7 +20,7 @@ describe('useSimulate', () => {
 
   it('should call api.createPayment with correct payload', async () => {
     const mockPayment = { payment_id: 'PMT-AAAA0001234567890123', status: 'RECEIVED', received_at: '2023-06-01T12:00:00Z', destination: 'SPEI' };
-    mockApi.createPayment.mockResolvedValueOnce(mockPayment as unknown);
+    mockApi.createPayment.mockResolvedValueOnce(mockPayment as never);
 
     const { result } = renderHook(() => useSimulate());
 
@@ -45,7 +45,9 @@ describe('useSimulate', () => {
 
   it('should set loading to true during request', async () => {
     let resolvePromise!: (v: unknown) => void;
-    mockApi.createPayment.mockImplementationOnce(() => new Promise(r => { resolvePromise = r; }));
+    mockApi.createPayment.mockImplementationOnce(
+      () => new Promise<never>((r) => { resolvePromise = r as (v: unknown) => void; }),
+    );
 
     const { result } = renderHook(() => useSimulate());
 
@@ -82,7 +84,7 @@ describe('useSimulate', () => {
 
   it('should generate unique idempotency key per request', async () => {
     const mockPayment = { payment_id: 'PMT-TEST', status: 'RECEIVED', received_at: '', destination: 'SPEI' };
-    mockApi.createPayment.mockResolvedValue(mockPayment as unknown);
+    mockApi.createPayment.mockResolvedValue(mockPayment as never);
 
     const { result } = renderHook(() => useSimulate());
 
