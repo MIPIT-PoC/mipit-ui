@@ -31,7 +31,7 @@ const SAMPLE_PAYLOADS: Record<Rail, Record<string, unknown>> = {
     tipoPago: 1,
     tipoCuentaBeneficiario: 40,
     nombreBeneficiario: 'Carlos López',
-    cuentaBeneficiario: '012180000118359719',
+    cuentaBeneficiario: '012180000118359713',
     conceptoPago: 'Transferencia MIPIT',
     referenciaNumerica: 1234567,
   },
@@ -55,7 +55,7 @@ const SAMPLE_PAYLOADS: Record<Rail, Record<string, unknown>> = {
       Dbtr: { Nm: 'Hans Müller', PstlAdr: { Ctry: 'DE' } },
       DbtrAcct: { Id: { IBAN: 'DE89370400440532013000' } },
       Cdtr: { Nm: 'Maria Garcia', PstlAdr: { Ctry: 'MX' } },
-      CdtrAcct: { Id: { Othr: { Id: '012180000118359719' } } },
+      CdtrAcct: { Id: { Othr: { Id: '012180000118359713' } } },
     },
   },
   ACH_NACHA: {
