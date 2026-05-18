@@ -136,12 +136,19 @@ export default function PaymentDetailPage({ params }: Props) {
                   <div className="flex flex-col gap-1 pt-2 border-t">
                     <span className="text-muted-foreground">Trace ID (OpenTelemetry)</span>
                     <code className="text-[10px] font-mono break-all">{payment.trace_id}</code>
+                    {/*
+                       * W5.3 — Jaeger link via attribute search rather than /trace/<id>.
+                       * Our trace_id is a ULID (request-scoped) attached as the
+                       * span attribute `mipit.trace_id`; the underlying OTel
+                       * span uses a different hex ID. /trace/<ULID> returns
+                       * "Trace not found"; search-by-attribute does find it.
+                       */}
                     <a
-                      href={`${JAEGER_BASE_URL}/trace/${payment.trace_id}`}
+                      href={`${JAEGER_BASE_URL}/search?service=mipit-core&tags=${encodeURIComponent(JSON.stringify({ 'mipit.trace_id': payment.trace_id }))}`}
                       target="_blank" rel="noopener noreferrer"
                       className="text-blue-500 hover:underline text-xs mt-1"
                     >
-                      Ver en Jaeger ↗
+                      Buscar en Jaeger ↗
                     </a>
                   </div>
                 )}

@@ -4,6 +4,10 @@ export type PaymentStatus =
   | 'RECEIVED'
   | 'VALIDATED'
   | 'CANONICALIZED'
+  // W5.6 — added so a payment that the SSE/REST surfaces while still in the
+  // normalization step (Wave 3 P05 stage between CANONICALIZED and ROUTED)
+  // doesn't crash the badge with STATUS_CONFIG[undefined].
+  | 'NORMALIZED'
   | 'ROUTED'
   | 'QUEUED'
   | 'SENT_TO_DESTINATION'

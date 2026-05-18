@@ -4,6 +4,8 @@ export const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string
   RECEIVED:             { label: 'Recibido',        color: 'bg-blue-500',    step: 1 },
   VALIDATED:            { label: 'Validado',        color: 'bg-blue-600',    step: 2 },
   CANONICALIZED:        { label: 'Canonicalizado',  color: 'bg-indigo-500',  step: 3 },
+  // W5.6 — same step/color as CANONICALIZED so the timeline shows them grouped.
+  NORMALIZED:           { label: 'Normalizado',     color: 'bg-indigo-600',  step: 3 },
   ROUTED:               { label: 'Enrutado',        color: 'bg-purple-500',  step: 4 },
   QUEUED:               { label: 'En Cola',         color: 'bg-yellow-500',  step: 5 },
   SENT_TO_DESTINATION:  { label: 'Enviado al Riel', color: 'bg-orange-500',  step: 6 },

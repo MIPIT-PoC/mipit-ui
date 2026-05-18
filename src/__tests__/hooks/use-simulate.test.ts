@@ -29,7 +29,7 @@ describe('useSimulate', () => {
         amount: 1500,
         currency: 'USD',
         debtor: { alias: 'PIX-test@email.com', name: 'João' },
-        creditor: { alias: 'SPEI-012180000118359719', name: 'María' },
+        creditor: { alias: 'SPEI-012180000118359713', name: 'María' },
         purpose: 'P2P',
         reference: 'REF-001',
       });
