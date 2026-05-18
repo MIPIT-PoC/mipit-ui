@@ -47,7 +47,8 @@ type FormValues = z.infer<typeof formSchema>;
 const ALIAS_PLACEHOLDERS: Record<ProductiveRail, { debtor: string; creditor: string }> = {
   PIX:   { debtor: 'PIX-12345678909',           creditor: 'PIX-+5511999887766' },
   SPEI:  { debtor: 'SPEI-012180000118359713',   creditor: 'SPEI-002180012345678906' },
-  BRE_B: { debtor: 'BREB-+573001234567',         creditor: 'BREB-901234567-3' },
+  // Audit 3 X1 — NIT `901234567` DIAN check digit is 7 (not 3 as previously placed).
+  BRE_B: { debtor: 'BREB-+573001234567',         creditor: 'BREB-901234567-7' },
 };
 
 function RailPicker({ label, value, onChange, excluded }: {

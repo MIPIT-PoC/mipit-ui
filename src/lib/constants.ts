@@ -26,7 +26,12 @@ export const RAIL_CONFIG = {
   ISO20022_MX: { label: 'ISO 20022 MX',       flag: '🏦', currency: 'EUR', aliasPrefix: '',       aliasPattern: /^[A-Z]{2}\d{2}[A-Z0-9]{4,32}$/,               region: 'Internacional' },
   ACH_NACHA:   { label: 'ACH NACHA (EE.UU)', flag: '🇺🇸', currency: 'USD', aliasPrefix: '',       aliasPattern: /^\d{9}\/[\w-]+$/,              region: 'América del Norte' },
   FEDNOW:      { label: 'FedNow (EE.UU)',    flag: '🇺🇸', currency: 'USD', aliasPrefix: '',       aliasPattern: /^\d{9}\/[\w-]+$/,              region: 'América del Norte' },
-  BRE_B:       { label: 'Bre-B (Colombia)', flag: '🇨🇴', currency: 'COP', aliasPrefix: 'BREB-',  aliasPattern: /^(BREB-\+57\d{10}|\d{9,10}-\d|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+)$/, region: 'América del Sur' },
+  // Audit 3 B1-008 / X1 — UI regex tightened to match core (W5.11 +
+  // adapter validator). BRE_B aliases MUST start with `BREB-` (consistent
+  // with PIX-/SPEI-). Phones are mobile-only (`+573<9 dig>`) per BanRep
+  // TR-002. NIT keeps `\d{9,10}-\d` (8-digit DIAN suffix). EMAIL stays as
+  // ASCII RFC subset. ALIAS adds `@<3-19>` per TR-002 §4.
+  BRE_B:       { label: 'Bre-B (Colombia)', flag: '🇨🇴', currency: 'COP', aliasPrefix: 'BREB-',  aliasPattern: /^BREB-(\+573\d{9}|\d{9,10}-\d|@[A-Za-z0-9._]{3,19}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/, region: 'América del Sur' },
 } as const;
 
 export type SupportedRail = keyof typeof RAIL_CONFIG;
