@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Toaster } from 'sonner';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import './globals.css';
@@ -22,6 +23,9 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
+        {/* P11 — Mount Sonner Toaster (was missing; sonner.toast calls from
+            4 pages silently disappeared, making error UX invisible). */}
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );

@@ -11,7 +11,8 @@ describe('RailAckPanel', () => {
   it('renders ACCEPTED status with green styling', () => {
     render(<RailAckPanel railAck={{ status: 'ACCEPTED', rail_tx_id: 'TX-001' }} />);
     expect(screen.getByText(/Aceptado por el riel/i)).toBeInTheDocument();
-    expect(screen.getByText('TX-001')).toBeInTheDocument();
+    // P11 — text is rendered as "ID Riel: TX-001"; query first matching element.
+    expect(screen.getAllByText(/TX-001/)[0]).toBeInTheDocument();
   });
 
   it('renders REJECTED status with red styling', () => {

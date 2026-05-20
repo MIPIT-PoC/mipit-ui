@@ -2,14 +2,18 @@ import { STATUS_CONFIG, RAIL_CONFIG } from '@/lib/constants';
 import type { PaymentStatus } from '@/lib/types';
 
 describe('STATUS_CONFIG', () => {
+  // W5.6 — Aligned with the 15-state machine in canonical.ts:PAYMENT_STATUS_ENUM
+  // (P01 canonical schema). Wave 5 added NORMALIZED so the UI no longer crashes
+  // when an in-pipeline payment is queried.
   const expectedStatuses: PaymentStatus[] = [
-    'RECEIVED', 'VALIDATED', 'CANONICALIZED', 'ROUTED', 'QUEUED',
+    'RECEIVED', 'VALIDATED', 'CANONICALIZED', 'NORMALIZED', 'ROUTED', 'QUEUED',
     'SENT_TO_DESTINATION', 'ACKED_BY_RAIL', 'COMPLETED',
     'FAILED', 'REJECTED', 'DUPLICATE',
+    'COMPENSATING', 'COMPENSATED', 'DEAD_LETTER',
   ];
 
-  it('should have entries for all 11 payment statuses', () => {
-    expect(Object.keys(STATUS_CONFIG).length).toBe(11);
+  it('should have entries for all 15 payment statuses', () => {
+    expect(Object.keys(STATUS_CONFIG).length).toBe(15);
   });
 
   expectedStatuses.forEach(status => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,12 +9,25 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { RAIL_CONFIG } from '@/lib/constants';
-import type { Rail } from '@/lib/types';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
-const RAILS: Rail[] = ['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'];
+/**
+ * W5.8 — /simulate is restricted to the 3 productive rails (PIX, SPEI, Bre-B)
+ * because those are the only ones with a real adapter + mock + pipeline E2E.
+ * The other 4 (SWIFT MT103, ISO20022 MX, ACH NACHA, FedNow) are case-study
+ * rails that exercise the canonical/translation layer for extensibility
+ * demonstration; they are reachable from the /translator page.
+ *
+ * See LIMITATIONS.md §1 and audits/AUDITORIA-CUMPLIMIENTO-TESIS-2026-05-17.md.
+ */
+const PRODUCTIVE_RAILS = ['PIX', 'SPEI', 'BRE_B'] as const;
+type ProductiveRail = (typeof PRODUCTIVE_RAILS)[number];
+const RAILS: ProductiveRail[] = [...PRODUCTIVE_RAILS];
 
-// Validation functions matching backend schema
+// Audit-Claude W5.8 + master Carlos: keep inline validation (checksum CLABE,
+// CPF, NIT) — backend schema valida igual pero el cliente da feedback
+// inmediato y permite mejor UX. Las productive rails ya están en
+// PRODUCTIVE_RAILS arriba; los 4 case-study viven en /translator.
 function validatePixAlias(alias: string): boolean {
   return alias.startsWith('PIX-') && alias.length > 4;
 }
@@ -40,7 +54,7 @@ function validateBrebAlias(alias: string): boolean {
   return key.length >= 3;
 }
 
-function validateAliasForRail(alias: string, rail: Rail): string | true {
+function validateAliasForRail(alias: string, rail: ProductiveRail): string | true {
   if (!alias) return 'El alias es requerido';
 
   if (rail === 'PIX') {
@@ -57,31 +71,15 @@ function validateAliasForRail(alias: string, rail: Rail): string | true {
     return true;
   }
 
-  // For other rails, just require the field
+  // ProductiveRail is exhaustive; fall-through unreachable.
   return true;
 }
 const createFormSchema = () =>
   z
     .object({
-      originRail: z.enum([
-        'PIX',
-        'SPEI',
-        'SWIFT_MT103',
-        'ISO20022_MX',
-        'ACH_NACHA',
-        'FEDNOW',
-        'BRE_B',
-      ] as const),
-
-      destRail: z.enum([
-        'PIX',
-        'SPEI',
-        'SWIFT_MT103',
-        'ISO20022_MX',
-        'ACH_NACHA',
-        'FEDNOW',
-        'BRE_B',
-      ] as const),
+      // Audit 4 merge — sólo productive rails en /simulate (W5.8).
+      originRail: z.enum(PRODUCTIVE_RAILS),
+      destRail: z.enum(PRODUCTIVE_RAILS),
 
       amount: z.coerce.number().positive('El monto debe ser mayor a 0'),
 
@@ -132,14 +130,14 @@ const createFormSchema = () =>
 type FormSchemaType = ReturnType<typeof createFormSchema>;
 type FormValues = z.infer<FormSchemaType>;
 
-const ALIAS_PLACEHOLDERS: Record<Rail, { debtor: string; creditor: string }> = {
-  PIX: { debtor: 'PIX-cpf@email.com', creditor: 'PIX-+5511999887766' },
-  SPEI: { debtor: 'SPEI-012180000118359719', creditor: 'SPEI-002180012345678901' },
-  SWIFT_MT103: { debtor: '/123456789', creditor: '/SPEI-012345678901234567' },
-  ISO20022_MX: { debtor: 'DE89370400440532013000', creditor: 'MX29BBVA0123456789012345' },
-  ACH_NACHA: { debtor: '021000021/987654321', creditor: '026009593/123456789' },
-  FEDNOW: { debtor: '021000021/987654321', creditor: '026009593/123456789' },
-  BRE_B: { debtor: 'BREB-901234567-CC', creditor: 'BREB-809876543-CA' },
+// W5.7 — CLABE placeholders use valid mod-10 check digits.
+// W5.11 — Bre-B mobile alias `+57 3xxx` (TR-002 mobile-only).
+// Audit 3 X1 — NIT `901234567` DIAN check digit is 7 (not 3 as previously placed).
+// Audit 4 merge — restringido a ProductiveRail (3); los 4 case-study viven en /translator (W5.8).
+const ALIAS_PLACEHOLDERS: Record<ProductiveRail, { debtor: string; creditor: string }> = {
+  PIX:   { debtor: 'PIX-12345678909',           creditor: 'PIX-+5511999887766' },
+  SPEI:  { debtor: 'SPEI-012180000118359713',   creditor: 'SPEI-002180012345678906' },
+  BRE_B: { debtor: 'BREB-+573001234567',         creditor: 'BREB-901234567-7' },
 };
 
 function RailPicker({
@@ -149,9 +147,9 @@ function RailPicker({
   excluded,
 }: {
   label: string;
-  value: Rail;
-  onChange: (r: Rail) => void;
-  excluded?: Rail;
+  value: ProductiveRail;
+  onChange: (r: ProductiveRail) => void;
+  excluded?: ProductiveRail;
 }) {
   return (
     <div className="space-y-2">
@@ -210,8 +208,10 @@ const inputClass =
 
 export default function SimulatePage() {
   const router = useRouter();
-  const [originRail, setOriginRail] = useState<Rail>('PIX');
-  const [destRail, setDestRail] = useState<Rail>('SPEI');
+  // Audit 4 merge — ProductiveRail (3 productive), formSchema con superRefine
+  // de master para validación inline checksum.
+  const [originRail, setOriginRail] = useState<ProductiveRail>('PIX');
+  const [destRail, setDestRail] = useState<ProductiveRail>('SPEI');
   const formSchema = createFormSchema();
 
   const {
@@ -239,17 +239,17 @@ export default function SimulatePage() {
   const debtorAliasValue = watch('debtorAlias');
   const creditorAliasValue = watch('creditorAlias');
 
-  function handleOriginChange(r: Rail) {
+  function handleOriginChange(r: ProductiveRail) {
     setOriginRail(r);
     setValue('originRail', r, { shouldValidate: true });
     if (r === destRail) {
       const other = RAILS.find((x) => x !== r) ?? 'SPEI';
-      setDestRail(other as Rail);
-      setValue('destRail', other as Rail, { shouldValidate: true });
+      setDestRail(other);
+      setValue('destRail', other, { shouldValidate: true });
     }
   }
 
-  function handleDestChange(r: Rail) {
+  function handleDestChange(r: ProductiveRail) {
     setDestRail(r);
     setValue('destRail', r, { shouldValidate: true });
   }
@@ -281,7 +281,18 @@ export default function SimulatePage() {
       <div>
         <h1 className="text-3xl font-bold">Simulación de Pago</h1>
         <p className="text-muted-foreground mt-2">
-          Inicia una transacción transfronteriza entre rieles de pago
+          Inicia una transacción transfronteriza entre los <strong>3 rieles productivos</strong> del PoC.
+        </p>
+      </div>
+
+      {/* W5.8 — Banner steering case-study rails to the /translator page */}
+      <div className="rounded-lg border border-dashed bg-muted/40 p-4 text-sm">
+        <p className="font-medium">¿Buscas SWIFT MT103, ISO 20022 MX, ACH NACHA o FedNow?</p>
+        <p className="text-muted-foreground mt-1">
+          Esos cuatro rieles son <em>case-study de extensibilidad</em> — usan la capa canónica
+          ISO 20022 pacs.008 pero no tienen adaptador productivo ni mock. Para ver cómo MiPIT los
+          traduce, abre el{' '}
+          <Link href="/translator" className="text-primary font-medium underline">Traductor ISO 20022 →</Link>.
         </p>
       </div>
 

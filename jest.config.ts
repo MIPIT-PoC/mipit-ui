@@ -5,7 +5,9 @@ const createJestConfig = nextJest({ dir: './' });
 
 const customConfig: Config = {
   testEnvironment: 'jsdom',
-  setupFiles: ['<rootDir>/jest.setup.ts'],
+  // P11 — `setupFilesAfterEach` was the wrong key (`setupFiles`). jest-dom
+  // matchers need the test framework globals already loaded.
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },

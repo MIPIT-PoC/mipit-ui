@@ -4,6 +4,8 @@ export const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string
   RECEIVED:             { label: 'Recibido',        color: 'bg-blue-500',    step: 1 },
   VALIDATED:            { label: 'Validado',        color: 'bg-blue-600',    step: 2 },
   CANONICALIZED:        { label: 'Canonicalizado',  color: 'bg-indigo-500',  step: 3 },
+  // W5.6 — same step/color as CANONICALIZED so the timeline shows them grouped.
+  NORMALIZED:           { label: 'Normalizado',     color: 'bg-indigo-600',  step: 3 },
   ROUTED:               { label: 'Enrutado',        color: 'bg-purple-500',  step: 4 },
   QUEUED:               { label: 'En Cola',         color: 'bg-yellow-500',  step: 5 },
   SENT_TO_DESTINATION:  { label: 'Enviado al Riel', color: 'bg-orange-500',  step: 6 },
@@ -24,7 +26,19 @@ export const RAIL_CONFIG = {
   ISO20022_MX: { label: 'ISO 20022 MX',       flag: '🏦', currency: 'EUR', aliasPrefix: '',       aliasPattern: /^[A-Z]{2}\d{2}[A-Z0-9]{4,32}$/,               region: 'Internacional' },
   ACH_NACHA:   { label: 'ACH NACHA (EE.UU)', flag: '🇺🇸', currency: 'USD', aliasPrefix: '',       aliasPattern: /^\d{9}\/[\w-]+$/,              region: 'América del Norte' },
   FEDNOW:      { label: 'FedNow (EE.UU)',    flag: '🇺🇸', currency: 'USD', aliasPrefix: '',       aliasPattern: /^\d{9}\/[\w-]+$/,              region: 'América del Norte' },
-  BRE_B:       { label: 'Bre-B (Colombia)', flag: '🇨🇴', currency: 'COP', aliasPrefix: 'BREB-',  aliasPattern: /^(BREB-\+57\d{10}|\d{9,10}-\d|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+)$/, region: 'América del Sur' },
+  // Audit 3 B1-008 / X1 — UI regex tightened to match core (W5.11 +
+  // adapter validator). BRE_B aliases MUST start with `BREB-` (consistent
+  // with PIX-/SPEI-). Phones are mobile-only (`+573<9 dig>`) per BanRep
+  // TR-002. NIT keeps `\d{9,10}-\d` (8-digit DIAN suffix). EMAIL stays as
+  // ASCII RFC subset. ALIAS adds `@<3-19>` per TR-002 §4.
+  BRE_B:       { label: 'Bre-B (Colombia)', flag: '🇨🇴', currency: 'COP', aliasPrefix: 'BREB-',  aliasPattern: /^BREB-(\+573\d{9}|\d{9,10}-\d|@[A-Za-z0-9._]{3,19}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/, region: 'América del Sur' },
 } as const;
 
 export type SupportedRail = keyof typeof RAIL_CONFIG;
+
+/**
+ * P11/P07 — Jaeger base URL for trace links on payment detail.
+ * Override with NEXT_PUBLIC_JAEGER_URL at build time.
+ */
+export const JAEGER_BASE_URL =
+  process.env.NEXT_PUBLIC_JAEGER_URL ?? 'http://localhost:16686';
