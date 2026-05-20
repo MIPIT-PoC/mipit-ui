@@ -13,35 +13,141 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 
 const RAILS: Rail[] = ['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'];
 
-const formSchema = z.object({
-  originRail: z.enum(['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'] as const),
-  destRail: z.enum(['PIX', 'SPEI', 'SWIFT_MT103', 'ISO20022_MX', 'ACH_NACHA', 'FEDNOW', 'BRE_B'] as const),
-  amount: z.coerce.number().positive('El monto debe ser mayor a 0'),
-  currency: z.string().min(3).max(3),
-  debtorAlias: z.string().min(3, 'El alias del ordenante es requerido'),
-  debtorName: z.string().optional(),
-  creditorAlias: z.string().min(3, 'El alias del beneficiario es requerido'),
-  creditorName: z.string().optional(),
-  purpose: z.string().optional(),
-  reference: z.string().optional(),
-}).refine(d => d.originRail !== d.destRail, {
-  message: 'El riel origen y destino deben ser diferentes',
-  path: ['destRail'],
-});
+// Validation functions matching backend schema
+function validatePixAlias(alias: string): boolean {
+  return alias.startsWith('PIX-') && alias.length > 4;
+}
 
-type FormValues = z.infer<typeof formSchema>;
+function validateSpeAlias(alias: string): boolean {
+  if (!alias.startsWith('SPEI-')) return false;
+  const clabe = alias.slice(5);
+  if (!/^\d{18}$/.test(clabe)) return false;
+  const weights = [3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7];
+  const sum = weights.reduce((acc, w, i) => acc + parseInt(clabe[i], 10) * w, 0);
+  return parseInt(clabe[17], 10) === (10 - (sum % 10)) % 10;
+}
+
+function validateBrebAlias(alias: string): boolean {
+  if (!alias.startsWith('BREB-')) return false;
+  const key = alias.slice(5);
+  // Phone: +57 followed by 10 digits
+  if (/^\+57\d{10}$/.test(key)) return true;
+  // NIT: 9-10 digits, dash, 1 digit
+  if (/^\d{9,10}-\d$/.test(key)) return true;
+  // Email: must have @ and .
+  if (key.includes('@') && key.includes('.') && key.length >= 5) return true;
+  // Generic alias: at least 3 chars
+  return key.length >= 3;
+}
+
+function validateAliasForRail(alias: string, rail: Rail): string | true {
+  if (!alias) return 'El alias es requerido';
+
+  if (rail === 'PIX') {
+    if (!validatePixAlias(alias)) return 'Debe ser: PIX-xxxxx (ej: PIX-user@bank.com)';
+    return true;
+  }
+  if (rail === 'SPEI') {
+    if (!validateSpeAlias(alias))
+      return 'Debe ser: SPEI-XXXXXXXXXXXXXXXXXX (18 dígitos CLABE válido)';
+    return true;
+  }
+  if (rail === 'BRE_B') {
+    if (!validateBrebAlias(alias)) return 'Debe ser: BREB-phone/NIT/email (ej: BREB-+573005551234)';
+    return true;
+  }
+
+  // For other rails, just require the field
+  return true;
+}
+const createFormSchema = () =>
+  z
+    .object({
+      originRail: z.enum([
+        'PIX',
+        'SPEI',
+        'SWIFT_MT103',
+        'ISO20022_MX',
+        'ACH_NACHA',
+        'FEDNOW',
+        'BRE_B',
+      ] as const),
+
+      destRail: z.enum([
+        'PIX',
+        'SPEI',
+        'SWIFT_MT103',
+        'ISO20022_MX',
+        'ACH_NACHA',
+        'FEDNOW',
+        'BRE_B',
+      ] as const),
+
+      amount: z.coerce.number().positive('El monto debe ser mayor a 0'),
+
+      currency: z.string().min(3).max(3),
+
+      debtorAlias: z.string().min(1, 'El alias del ordenante es requerido'),
+
+      debtorName: z.string().optional(),
+
+      creditorAlias: z.string().min(1, 'El alias del beneficiario es requerido'),
+
+      creditorName: z.string().optional(),
+
+      purpose: z.string().optional(),
+
+      reference: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      const debtorValidation = validateAliasForRail(data.debtorAlias, data.originRail);
+
+      if (debtorValidation !== true) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['debtorAlias'],
+          message: String(debtorValidation),
+        });
+      }
+
+      const creditorValidation = validateAliasForRail(data.creditorAlias, data.destRail);
+
+      if (creditorValidation !== true) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['creditorAlias'],
+          message: String(creditorValidation),
+        });
+      }
+
+      if (data.originRail === data.destRail) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['destRail'],
+          message: 'El riel origen y destino deben ser diferentes',
+        });
+      }
+    });
+
+type FormSchemaType = ReturnType<typeof createFormSchema>;
+type FormValues = z.infer<FormSchemaType>;
 
 const ALIAS_PLACEHOLDERS: Record<Rail, { debtor: string; creditor: string }> = {
-  PIX:         { debtor: 'PIX-cpf@email.com', creditor: 'PIX-+5511999887766' },
-  SPEI:        { debtor: 'SPEI-012180000118359719', creditor: 'SPEI-002180012345678901' },
+  PIX: { debtor: 'PIX-cpf@email.com', creditor: 'PIX-+5511999887766' },
+  SPEI: { debtor: 'SPEI-012180000118359719', creditor: 'SPEI-002180012345678901' },
   SWIFT_MT103: { debtor: '/123456789', creditor: '/SPEI-012345678901234567' },
   ISO20022_MX: { debtor: 'DE89370400440532013000', creditor: 'MX29BBVA0123456789012345' },
-  ACH_NACHA:   { debtor: '021000021/987654321', creditor: '026009593/123456789' },
-  FEDNOW:      { debtor: '021000021/987654321', creditor: '026009593/123456789' },
-  BRE_B:       { debtor: 'BREB-901234567-CC', creditor: 'BREB-809876543-CA' },
+  ACH_NACHA: { debtor: '021000021/987654321', creditor: '026009593/123456789' },
+  FEDNOW: { debtor: '021000021/987654321', creditor: '026009593/123456789' },
+  BRE_B: { debtor: 'BREB-901234567-CC', creditor: 'BREB-809876543-CA' },
 };
 
-function RailPicker({ label, value, onChange, excluded }: {
+function RailPicker({
+  label,
+  value,
+  onChange,
+  excluded,
+}: {
   label: string;
   value: Rail;
   onChange: (r: Rail) => void;
@@ -51,7 +157,7 @@ function RailPicker({ label, value, onChange, excluded }: {
     <div className="space-y-2">
       <label className="text-sm font-medium">{label}</label>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {RAILS.map(rail => {
+        {RAILS.map((rail) => {
           const conf = RAIL_CONFIG[rail as keyof typeof RAIL_CONFIG];
           const disabled = rail === excluded;
           return (
@@ -78,24 +184,43 @@ function RailPicker({ label, value, onChange, excluded }: {
   );
 }
 
-function FormField({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function FormField({
+  label,
+  error,
+  children,
+  hint,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+  hint?: string;
+}) {
   return (
     <div className="space-y-1">
       <label className="text-sm font-medium">{label}</label>
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+      {!error && hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
 
-const inputClass = "w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring";
+const inputClass =
+  'w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring';
 
 export default function SimulatePage() {
   const router = useRouter();
   const [originRail, setOriginRail] = useState<Rail>('PIX');
   const [destRail, setDestRail] = useState<Rail>('SPEI');
+  const formSchema = createFormSchema();
 
-  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       originRail: 'PIX',
@@ -104,24 +229,29 @@ export default function SimulatePage() {
       currency: 'USD',
       purpose: 'P2P',
       reference: 'MIPIT-POC',
+      debtorAlias: 'PIX-user@bank.com',
+      creditorAlias: 'SPEI-012180000118359719',
     },
+    mode: 'onChange',
   });
 
   const currency = watch('currency');
+  const debtorAliasValue = watch('debtorAlias');
+  const creditorAliasValue = watch('creditorAlias');
 
   function handleOriginChange(r: Rail) {
     setOriginRail(r);
-    setValue('originRail', r);
+    setValue('originRail', r, { shouldValidate: true });
     if (r === destRail) {
-      const other = RAILS.find(x => x !== r) ?? 'SPEI';
+      const other = RAILS.find((x) => x !== r) ?? 'SPEI';
       setDestRail(other as Rail);
-      setValue('destRail', other as Rail);
+      setValue('destRail', other as Rail, { shouldValidate: true });
     }
   }
 
   function handleDestChange(r: Rail) {
     setDestRail(r);
-    setValue('destRail', r);
+    setValue('destRail', r, { shouldValidate: true });
   }
 
   const onSubmit = async (data: FormValues) => {
@@ -160,8 +290,18 @@ export default function SimulatePage() {
         <div className="rounded-lg border p-6 space-y-6">
           <h2 className="font-semibold">Rieles de Pago</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <RailPicker label="Riel Origen" value={originRail} onChange={handleOriginChange} excluded={destRail} />
-            <RailPicker label="Riel Destino" value={destRail} onChange={handleDestChange} excluded={originRail} />
+            <RailPicker
+              label="Riel Origen"
+              value={originRail}
+              onChange={handleOriginChange}
+              excluded={destRail}
+            />
+            <RailPicker
+              label="Riel Destino"
+              value={destRail}
+              onChange={handleDestChange}
+              excluded={originRail}
+            />
           </div>
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-full text-sm text-muted-foreground">
@@ -206,13 +346,21 @@ export default function SimulatePage() {
             <span className="ml-2 text-sm font-normal text-muted-foreground">({originRail})</span>
           </h2>
           <div className="grid grid-cols-1 gap-4">
-            <FormField label="Alias / Cuenta" error={errors.debtorAlias?.message}>
-              <input
-                {...register('debtorAlias')}
-                placeholder={placeholders.debtor}
-                className={inputClass}
-              />
-              <p className="text-xs text-muted-foreground mt-1">Ejemplo: {placeholders.debtor}</p>
+            <FormField
+              label="Alias / Cuenta"
+              error={errors.debtorAlias?.message}
+              hint={`Formato: ${placeholders.debtor}`}
+            >
+              <div className="relative">
+                <input
+                  {...register('debtorAlias')}
+                  placeholder={placeholders.debtor}
+                  className={`${inputClass} ${debtorAliasValue && errors.debtorAlias ? 'border-red-500' : ''}`}
+                />
+                {debtorAliasValue && !errors.debtorAlias && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600">✓</div>
+                )}
+              </div>
             </FormField>
             <FormField label="Nombre (opcional)">
               <input
@@ -231,13 +379,21 @@ export default function SimulatePage() {
             <span className="ml-2 text-sm font-normal text-muted-foreground">({destRail})</span>
           </h2>
           <div className="grid grid-cols-1 gap-4">
-            <FormField label="Alias / Cuenta" error={errors.creditorAlias?.message}>
-              <input
-                {...register('creditorAlias')}
-                placeholder={credPlaceholders.creditor}
-                className={inputClass}
-              />
-              <p className="text-xs text-muted-foreground mt-1">Ejemplo: {credPlaceholders.creditor}</p>
+            <FormField
+              label="Alias / Cuenta"
+              error={errors.creditorAlias?.message}
+              hint={`Formato: ${credPlaceholders.creditor}`}
+            >
+              <div className="relative">
+                <input
+                  {...register('creditorAlias')}
+                  placeholder={credPlaceholders.creditor}
+                  className={`${inputClass} ${creditorAliasValue && errors.creditorAlias ? 'border-red-500' : ''}`}
+                />
+                {creditorAliasValue && !errors.creditorAlias && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600">✓</div>
+                )}
+              </div>
             </FormField>
             <FormField label="Nombre (opcional)">
               <input
@@ -264,11 +420,7 @@ export default function SimulatePage() {
               </select>
             </FormField>
             <FormField label="Referencia">
-              <input
-                {...register('reference')}
-                placeholder="MIPIT-POC"
-                className={inputClass}
-              />
+              <input {...register('reference')} placeholder="MIPIT-POC" className={inputClass} />
             </FormField>
           </div>
         </div>
