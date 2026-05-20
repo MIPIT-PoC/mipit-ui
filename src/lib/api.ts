@@ -9,7 +9,7 @@ import type {
   RailMeta,
 } from './types';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '/api';
 
 let _cachedToken: string | null = null;
 let _tokenExpiresAt = 0;
@@ -44,13 +44,6 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-// Adapter mock URLs for the Bank Simulator Dashboard
-const ADAPTER_URLS: Record<string, string> = {
-  PIX: process.env.NEXT_PUBLIC_PIX_MOCK_URL ?? 'http://localhost:9001',
-  SPEI: process.env.NEXT_PUBLIC_SPEI_MOCK_URL ?? 'http://localhost:9002',
-  BRE_B: process.env.NEXT_PUBLIC_BREB_MOCK_URL ?? 'http://localhost:9003',
-};
-
 export const api = {
   createPayment: (body: CreatePaymentBody, idempotencyKey?: string) =>
     apiFetch<PaymentSummary>('/payments', {
@@ -71,6 +64,9 @@ export const api = {
   },
 
   getHealth: () => apiFetch<{ status: string; uptime: number }>('/health'),
+
+  getAdapterHealth: (rail: string) =>
+    apiFetch<Record<string, unknown>>(`/services/${rail}/health`),
 
   translate: (body: TranslateRequest) =>
     apiFetch<TranslateResponse>('/translate', {
@@ -114,66 +110,33 @@ export const api = {
     }),
 
   // Bank Simulator (direct calls to mock servers)
-  getMockStats: async (rail: string) => {
-    const url = ADAPTER_URLS[rail];
-    if (!url) throw new Error(`No mock URL for rail: ${rail}`);
-    const res = await fetch(`${url}/admin/stats`);
-    if (!res.ok) throw new Error(`Stats ${res.status}`);
-    return res.json();
-  },
+  getMockStats: (rail: string) =>
+    apiFetch<Record<string, unknown>>(`/mocks/${rail}/admin/stats`),
 
-  getMockConfig: async (rail: string) => {
-    const url = ADAPTER_URLS[rail];
-    if (!url) throw new Error(`No mock URL for rail: ${rail}`);
-    const res = await fetch(`${url}/admin/config`);
-    if (!res.ok) throw new Error(`Config ${res.status}`);
-    return res.json();
-  },
+  getMockConfig: (rail: string) =>
+    apiFetch<Record<string, unknown>>(`/mocks/${rail}/admin/config`),
 
-  updateMockConfig: async (rail: string, config: Record<string, unknown>) => {
-    const url = ADAPTER_URLS[rail];
-    if (!url) throw new Error(`No mock URL for rail: ${rail}`);
-    const res = await fetch(`${url}/admin/config`, {
+  updateMockConfig: (rail: string, config: Record<string, unknown>) =>
+    apiFetch<Record<string, unknown>>(`/mocks/${rail}/admin/config`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: res.statusText }));
-      throw new Error((err as { message?: string }).message ?? `Config update ${res.status}`);
-    }
-    return res.json();
-  },
+    }),
 
-  forceRejectNext: async (rail: string) => {
-    const url = ADAPTER_URLS[rail];
-    if (!url) throw new Error(`No mock URL for rail: ${rail}`);
-    const res = await fetch(`${url}/admin/reject-next`, { method: 'POST' });
-    if (!res.ok) throw new Error(`reject-next ${res.status}`);
-    return res.json();
-  },
+  forceRejectNext: (rail: string) =>
+    apiFetch<Record<string, unknown>>(`/mocks/${rail}/admin/reject-next`, {
+      method: 'POST',
+    }),
 
-  forceTimeoutNext: async (rail: string) => {
-    const url = ADAPTER_URLS[rail];
-    if (!url) throw new Error(`No mock URL for rail: ${rail}`);
-    const res = await fetch(`${url}/admin/timeout-next`, { method: 'POST' });
-    if (!res.ok) throw new Error(`timeout-next ${res.status}`);
-    return res.json();
-  },
+  forceTimeoutNext: (rail: string) =>
+    apiFetch<Record<string, unknown>>(`/mocks/${rail}/admin/timeout-next`, {
+      method: 'POST',
+    }),
 
-  resetMock: async (rail: string) => {
-    const url = ADAPTER_URLS[rail];
-    if (!url) throw new Error(`No mock URL for rail: ${rail}`);
-    const res = await fetch(`${url}/admin/reset`, { method: 'POST' });
-    if (!res.ok) throw new Error(`reset ${res.status}`);
-    return res.json();
-  },
+  resetMock: (rail: string) =>
+    apiFetch<Record<string, unknown>>(`/mocks/${rail}/admin/reset`, {
+      method: 'POST',
+    }),
 
-  getMockHealth: async (rail: string) => {
-    const url = ADAPTER_URLS[rail];
-    if (!url) throw new Error(`No mock URL for rail: ${rail}`);
-    const res = await fetch(`${url}/health`);
-    if (!res.ok) throw new Error(`Health ${res.status}`);
-    return res.json();
-  },
+  getMockHealth: (rail: string) =>
+    apiFetch<Record<string, unknown>>(`/mocks/${rail}/health`),
 };
