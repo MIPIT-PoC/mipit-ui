@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file navbar.tsx
+ * @description Sticky top navigation bar with the MiPIT brand, desktop links to dashboard/simulate/live/history/translator/analytics/simulator and a mobile hamburger drawer.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';

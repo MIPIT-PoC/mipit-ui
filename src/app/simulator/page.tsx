@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file page.tsx
+ * @description Bank simulator control panel with one tab per rail (PIX, SPEI, Bre-B) exposing live mock health/stats, rejection-rate slider, latency window, forced reject code and reject/timeout/reset actions against the admin endpoints.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { toast } from 'sonner';

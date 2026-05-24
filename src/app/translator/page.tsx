@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file page.tsx
+ * @description ISO 20022 message translator playground that posts a per-rail sample payload to /translate/preview and renders the canonical pacs.008 representation plus translations to the remaining 6 supported rails.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';

@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file page.tsx
+ * @description Analytics page polling /analytics/* endpoints to render system summary, stage latency percentiles, circuit breakers, rate-limit utilization and on-demand reconciliation report.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';

@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file flow-timeline.tsx
+ * @description 8-step pipeline timeline component (RECEIVED → COMPLETED) that highlights the current and completed stages and renders a failure banner when the payment is in a terminal error state.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { STATUS_CONFIG } from '@/lib/constants';
 import type { PaymentStatus, PaymentDetail } from '@/lib/types';
 

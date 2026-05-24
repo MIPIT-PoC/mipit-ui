@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file recent-payments.tsx
+ * @description Dashboard widget that polls the latest 10 payments every 15s and renders them as compact rows with origin/destination rail flags, amount, status badge and relative timestamp.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';

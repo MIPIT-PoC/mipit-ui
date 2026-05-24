@@ -1,3 +1,10 @@
+/**
+ * @file page.tsx
+ * @description Top-level dashboard page that renders the stats cards, recent payments list and the service-health panel.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { StatsCards } from '@/components/dashboard/stats-cards';
 import { RecentPayments } from '@/components/dashboard/recent-payments';
 import { ServiceHealth } from '@/components/dashboard/service-health';

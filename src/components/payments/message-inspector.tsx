@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file message-inspector.tsx
+ * @description Side-by-side message inspector that renders the original rail payload, the canonical pacs.008 representation and the translated destination payload as formatted JSON columns.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 interface Props {
   original: Record<string, unknown> | null;
   canonical: Record<string, unknown> | null;

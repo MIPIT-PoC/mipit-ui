@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file use-simulate.ts
+ * @description Custom React hook that submits a new payment to /payments, generates a per-request idempotency key with crypto.randomUUID and surfaces loading/error/result state.
+ * @author Miguel Ángel Rico
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useState } from 'react';
 import { api } from '@/lib/api';
 import type { CreatePaymentBody, PaymentSummary } from '@/lib/types';

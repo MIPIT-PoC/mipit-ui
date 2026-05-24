@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file page.tsx
+ * @description Live payment tracker that subscribes to the SSE stream and renders a real-time feed with session counters by status and rail.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useSse } from '@/hooks/use-sse';

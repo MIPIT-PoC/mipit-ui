@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file service-health.tsx
+ * @description Dashboard panel that pings mipit-core and each productive rail adapter every 10s and renders status dots plus a summary chip indicating how many of the four services are healthy.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { RefreshCw } from 'lucide-react';

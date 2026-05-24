@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file page.tsx
+ * @description Payment history page that combines the status/rail filter bar with the paginated payment table.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useState } from 'react';
 import { PaymentTable } from '@/components/history/payment-table';
 import { Filters } from '@/components/history/filters';

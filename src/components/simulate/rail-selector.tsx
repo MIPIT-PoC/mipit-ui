@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file rail-selector.tsx
+ * @description Generic rail picker used in the simulation form that renders each entry of RAIL_CONFIG as a flag-and-label toggle button.
+ * @author Miguel Ángel Rico
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { RAIL_CONFIG } from '@/lib/constants';
 import type { Rail } from '@/lib/types';
 

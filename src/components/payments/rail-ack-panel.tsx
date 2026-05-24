@@ -1,3 +1,10 @@
+/**
+ * @file rail-ack-panel.tsx
+ * @description Rail acknowledgement panel that renders ACCEPTED/REJECTED/ERROR states, surfaces BACEN/CECOBAN error codes with human-readable descriptions and exposes the raw ACK JSON in an expandable section.
+ * @author Miguel Ángel Rico
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import type { PaymentDetail } from '@/lib/types';
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 

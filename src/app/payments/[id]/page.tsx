@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file page.tsx
+ * @description Detail view of a single payment showing the 8-step flow timeline, original/canonical/translated message inspector, rail ACK panel, ISO 20022 traceability (UETR, EndToEndId, trace_id with Jaeger deep link), FX breakdown and timestamps.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useEffect, useState, use } from 'react';
 import { api } from '@/lib/api';
 import { FlowTimeline } from '@/components/payments/flow-timeline';

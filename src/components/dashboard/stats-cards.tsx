@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file stats-cards.tsx
+ * @description Dashboard KPI cards deriving total/completed/failed counts, success rate and the active-rail count from the last 200 payments fetched every 15s.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { TrendingUp, TrendingDown, Activity, Globe } from 'lucide-react';

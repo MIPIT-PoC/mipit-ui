@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file use-sse.ts
+ * @description Custom React hook that opens an EventSource against /events/payments (or /events/payments/:id), buffers the latest N payment_update events with auto-reconnect on error and exposes connection state.
+ * @author Nicolás Calderón
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useEffect, useRef, useState, useCallback } from 'react';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '/api';

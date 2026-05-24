@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file page.tsx
+ * @description Payment simulation form restricted to the 3 productive rails (PIX, SPEI, Bre-B) with inline alias validation (CLABE mod-10, BRE-B phone/NIT/email), rail-pair picker and zod-resolved react-hook-form submission to /payments.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

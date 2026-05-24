@@ -1,3 +1,10 @@
+/**
+ * @file constants.ts
+ * @description UI-side configuration tables mapping the 15-state payment machine to labels/colors/steps and the 7 supported rails to flags/currencies/alias regexes, plus the Jaeger base URL for trace deep links.
+ * @author Nicolás Calderón
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import type { PaymentStatus } from './types';
 
 export const STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string; step: number }> = {

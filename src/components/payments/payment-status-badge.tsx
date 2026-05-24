@@ -1,3 +1,10 @@
+/**
+ * @file payment-status-badge.tsx
+ * @description Reusable status badge component that maps a PaymentStatus through STATUS_CONFIG to a colored pill and falls back to a neutral badge for unknown statuses.
+ * @author Miguel Ángel Rico
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { STATUS_CONFIG } from '@/lib/constants';
 import type { PaymentStatus } from '@/lib/types';
 

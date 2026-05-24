@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file use-payments.ts
+ * @description Custom React hook that lists payments from /payments with optional status/rail/limit filters and exposes loading/error/payments state with cancellation guards.
+ * @author Miguel Ángel Rico
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import type { PaymentDetail } from '@/lib/types';

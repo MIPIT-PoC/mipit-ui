@@ -1,3 +1,10 @@
+/**
+ * @file types.ts
+ * @description Shared TypeScript domain types mirroring the mipit-core API contracts (Rail, PaymentStatus, PaymentSummary, PaymentDetail with ISO 20022 fields, CreatePaymentBody, translate request/response shapes and RailMeta).
+ * @author Nicolás Calderón
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 export type Rail = 'PIX' | 'SPEI' | 'SWIFT_MT103' | 'ISO20022_MX' | 'ACH_NACHA' | 'FEDNOW' | 'BRE_B';
 
 export type PaymentStatus =

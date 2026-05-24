@@ -1,3 +1,10 @@
+/**
+ * @file layout.tsx
+ * @description Root App Router layout that mounts the Inter font, global navbar/footer, Sonner toaster and applies the base background/foreground theme.
+ * @author Carlos Mejía
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'sonner';

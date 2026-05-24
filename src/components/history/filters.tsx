@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file filters.tsx
+ * @description Filter bar for the payment history page exposing rail and status selects backed by RAIL_CONFIG / STATUS_CONFIG plus active-filter chips with a clear-all action.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import type { PaymentStatus, Rail } from '@/lib/types';
 import { STATUS_CONFIG, RAIL_CONFIG } from '@/lib/constants';
 import { X } from 'lucide-react';

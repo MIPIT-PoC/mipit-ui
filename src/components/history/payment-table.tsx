@@ -1,5 +1,12 @@
 'use client';
 
+/**
+ * @file payment-table.tsx
+ * @description Client-side paginated, sortable payment table that calls /payments with rail/status filters and renders rows with route flags, amount, status badge and a link to the detail page.
+ * @author María Camila Osuna
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';

@@ -1,3 +1,10 @@
+/**
+ * @file api.ts
+ * @description Thin fetch wrapper that injects a cached Bearer token from /auth/token and exposes typed methods for payments, translation preview, analytics, compensation and bank-mock administration endpoints of mipit-core.
+ * @author Nicolás Calderón
+ * @project MIPIT-PoC — Cross-border Instant Payments Middleware
+ */
+
 import type {
   PaymentSummary,
   PaymentDetail,
